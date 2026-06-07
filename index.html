@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="k1e2nVLNkHoJwCu6ol3GgFBjzxbYY4f1Hl7UWkhitAg" />
     <title>MizuRa Preset</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -186,9 +187,7 @@
     </style>
 </head>
 <body onclick="unmuteVideo()">
-
     <div class="menu-overlay-bg" id="menu-bg" onclick="toggleMenu(false)"></div>
-
     <div class="wrapper">
         <div class="sidebar" id="sidebar-menu">
             <div class="close-sidebar" onclick="toggleMenu(false)">X</div>
@@ -201,7 +200,6 @@
                 <div><span>Lapor bug / error website</span></div>
             </a>
         </div>
-
         <div class="media-box" id="media-container">
             <div class="top-overlay">
                 <div class="creator-info">
@@ -218,18 +216,15 @@
             <div class="sound-notice" id="sound-tag">Muted - Ketuk Layar</div>
             <div class="loading-text" id="loading-txt">Membaca Data...</div>
         </div>
-
         <div class="content-info">
             <h1 id="judul-preset">Memuat Judul...</h1>
             <p class="caption" id="caption-preset">Silahkan tunggu...</p>
             <p class="tags" id="tags-preset">#preset #alightmotion</p>
         </div>
-
         <div class="additional-card">
             <h3>Senjata Wajib Editor 🔥</h3>
             <p>Gunakan Alight Motion versi terbaru agar preset dapat di-import dengan sempurna tanpa error atau missing files.</p>
         </div>
-
         <div class="fixed-footer">
             <div class="counter-wrapper">
                 <div class="counter-badge" id="counter-badge">
@@ -242,96 +237,56 @@
             <a href="#" id="btn-am" class="btn-download" onclick="tambahKlik(event)">AMBIL PRESET DI SINI</a>
         </div>
     </div>
-
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const presetId = urlParams.get('id') || 'preset1';
         const jsonUrl = 'https://raw.githubusercontent.com/suryahafiz100-cyber/MizuRaPreset/main/data.json';
-
-        // Key unik per preset — pakai prefix panjang biar ga bentrok sama orang lain
         const COUNTER_KEY = 'mizurapreset__' + presetId.replace(/[^a-zA-Z0-9_-]/g, '_');
-
-        // API baru: countapi.mileshilliard.com — gratis, stabil, tanpa auth
-        // HIT = nambah +1 dan return nilai terbaru
-        // GET = baca nilai saat ini (TIDAK nambah)
         const HIT_URL = `https://countapi.mileshilliard.com/api/v1/hit/${COUNTER_KEY}`;
         const GET_URL = `https://countapi.mileshilliard.com/api/v1/get/${COUNTER_KEY}`;
-
         let videoEl = null;
         let linkAm = '#';
         let isCounting = false;
-
         function toggleMenu(show) {
             const sidebar = document.getElementById('sidebar-menu');
             const bg = document.getElementById('menu-bg');
             if (show) { sidebar.classList.add('active'); bg.classList.add('active'); }
             else { sidebar.classList.remove('active'); bg.classList.remove('active'); }
         }
-
-        function formatAngka(n) {
-            return Number(n).toLocaleString('id-ID');
-        }
-
-        function tampilkanJumlah(value) {
-            const el = document.getElementById('count-number');
-            if (el) el.textContent = formatAngka(value);
-        }
-
-        // Ambil nilai counter saat halaman dibuka (TIDAK nambah angka)
-        fetch(GET_URL)
-            .then(res => res.json())
-            .then(data => {
-                // Response: { "key": "...", "value": 5 }
-                tampilkanJumlah(data.value ?? 0);
-            })
-            .catch(() => {
-                tampilkanJumlah(0);
-            });
-
-        // Load preset dari GitHub
+        function formatAngka(n) { return Number(n).toLocaleString('id-ID'); }
+        function tampilkanJumlah(value) { const el = document.getElementById('count-number'); if (el) el.textContent = formatAngka(value); }
+        fetch(GET_URL).then(res => res.json()).then(data => { tampilkanJumlah(data.value ?? 0); }).catch(() => { tampilkanJumlah(0); });
         if (presetId) {
-            fetch(jsonUrl)
-                .then(res => res.json())
-                .then(data => {
-                    const preset = data.find(item => item.id === presetId);
-                    if (preset) {
-                        document.title = preset.judul + " by MizuRaPreset";
-                        document.getElementById('judul-preset').innerText = preset.judul;
-                        const creatorName = preset.creator || "@creator";
-                        document.getElementById('creator-header').innerText = creatorName.replace('@', '');
-                        document.getElementById('creator-username').innerText = creatorName.toLowerCase();
-                        document.getElementById('avatar-initial').innerText = creatorName.replace('@', '').charAt(0).toUpperCase();
-                        if (preset.caption) document.getElementById('caption-preset').innerText = preset.caption;
-                        if (preset.tags) document.getElementById('tags-preset').innerText = preset.tags;
-
-                        const container = document.getElementById('media-container');
-                        const videoExtensions = ['.mp4', '.mov', '.avi'];
-                        const isVideo = videoExtensions.some(ext => preset.link_video.toLowerCase().endsWith(ext));
-
-                        if (isVideo) {
-                            container.insertAdjacentHTML('beforeend', `<video id="main-video" src="${preset.link_video}" autoplay loop muted playsinline></video>`);
-                            document.getElementById('loading-txt').style.display = 'none';
-                            videoEl = document.getElementById('main-video');
-                        } else {
-                            container.insertAdjacentHTML('beforeend', `<img src="${preset.link_video}" alt="Preview">`);
-                            document.getElementById('loading-txt').style.display = 'none';
-                            document.getElementById('sound-tag').style.display = 'none';
-                        }
-
-                        const btn = document.getElementById('btn-am');
-                        linkAm = preset.link_am;
-                        btn.href = preset.link_am;
-                        btn.style.display = 'block';
+            fetch(jsonUrl).then(res => res.json()).then(data => {
+                const preset = data.find(item => item.id === presetId);
+                if (preset) {
+                    document.title = preset.judul + " by MizuRaPreset";
+                    document.getElementById('judul-preset').innerText = preset.judul;
+                    const creatorName = preset.creator || "@creator";
+                    document.getElementById('creator-header').innerText = creatorName.replace('@', '');
+                    document.getElementById('creator-username').innerText = creatorName.toLowerCase();
+                    document.getElementById('avatar-initial').innerText = creatorName.replace('@', '').charAt(0).toUpperCase();
+                    if (preset.caption) document.getElementById('caption-preset').innerText = preset.caption;
+                    if (preset.tags) document.getElementById('tags-preset').innerText = preset.tags;
+                    const container = document.getElementById('media-container');
+                    const videoExtensions = ['.mp4', '.mov', '.avi'];
+                    const isVideo = videoExtensions.some(ext => preset.link_video.toLowerCase().endsWith(ext));
+                    if (isVideo) {
+                        container.insertAdjacentHTML('beforeend', `<video id="main-video" src="${preset.link_video}" autoplay loop muted playsinline></video>`);
+                        document.getElementById('loading-txt').style.display = 'none';
+                        videoEl = document.getElementById('main-video');
                     } else {
-                        document.getElementById('loading-txt').innerText = "Preset Tidak Ditemukan!";
+                        container.insertAdjacentHTML('beforeend', `<img src="${preset.link_video}" alt="Preview">`);
+                        document.getElementById('loading-txt').style.display = 'none';
+                        document.getElementById('sound-tag').style.display = 'none';
                     }
-                })
-                .catch(err => {
-                    console.error(err);
-                    document.getElementById('loading-txt').innerText = "Gagal Memuat Data!";
-                });
+                    const btn = document.getElementById('btn-am');
+                    linkAm = preset.link_am;
+                    btn.href = preset.link_am;
+                    btn.style.display = 'block';
+                } else { document.getElementById('loading-txt').innerText = "Preset Tidak Ditemukan!"; }
+            }).catch(err => { console.error(err); document.getElementById('loading-txt').innerText = "Gagal Memuat Data!"; });
         }
-
         function unmuteVideo() {
             if (videoEl) {
                 videoEl.muted = false;
@@ -339,34 +294,17 @@
                 setTimeout(() => { document.getElementById('sound-tag').style.display = 'none'; }, 1200);
             }
         }
-
-        // Klik tombol = HIT +1 lalu redirect
         function tambahKlik(event) {
             event.preventDefault();
             if (isCounting) return;
             isCounting = true;
-
             const btn = document.getElementById('btn-am');
             btn.innerText = "MEMPROSES...";
             btn.classList.add('loading');
-
-            // HIT: nambah +1 dan dapat nilai terbaru dari server
-            fetch(HIT_URL)
-                .then(res => res.json())
-                .then(data => {
-                    tampilkanJumlah(data.value ?? 0);
-                })
-                .catch(() => {
-                    // Tetap redirect walau counter error
-                })
-                .finally(() => {
-                    window.location.href = linkAm;
-                    setTimeout(() => {
-                        btn.innerText = "AMBIL PRESET DI SINI";
-                        btn.classList.remove('loading');
-                        isCounting = false;
-                    }, 2000);
-                });
+            fetch(HIT_URL).then(res => res.json()).then(data => { tampilkanJumlah(data.value ?? 0); }).catch(() => {}).finally(() => {
+                window.location.href = linkAm;
+                setTimeout(() => { btn.innerText = "AMBIL PRESET DI SINI"; btn.classList.remove('loading'); isCounting = false; }, 2000);
+            });
         }
     </script>
 </body>
