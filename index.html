@@ -25,7 +25,7 @@
             min-height: 100vh;
             position: relative;
             box-shadow: 0 0 30px rgba(0,0,0,0.5);
-            padding-bottom: 120px;
+            padding-bottom: 140px;
         } 
         
         .media-box { 
@@ -257,7 +257,10 @@
         </div>
 
         <div class="fixed-footer">
-            <a href="#" id="btn-am" class="btn-download">AMBIL PRESET DI SINI</a>
+            <p id="teks-jumlah" style="text-align: center; font-size: 0.75rem; color: #4facfe; margin-bottom: 8px;">
+                Memuat jumlah pengunduh...
+            </p>
+            <a href="#" id="btn-am" class="btn-download" onclick="tambahKlik(event)">AMBIL PRESET DI SINI</a>
         </div>
     </div>
 
@@ -319,6 +322,40 @@
                 document.getElementById('sound-tag').innerHTML = "Volume On";
                 setTimeout(() => { document.getElementById('sound-tag').style.display = 'none'; }, 1200);
             }
+        }
+
+        // --- SISTEM PENGHITUNG BARU (LEBIH STABIL & REALTIME) --- //
+        const idAman = presetId.replace(/[^a-zA-Z0-9]/g, '_');
+        const countUrl = `https://count.getloli.com/get/@mizurapreset_${idAman}?theme=asoul`;
+
+        // 1. Ambil data saat web dibuka (Hanya melihat, tidak nambah klik)
+        fetch(countUrl)
+            .then(res => res.json())
+            .then(data => {
+                // Mengambil total angka dari server luar
+                const total = data.value || 0;
+                document.getElementById('teks-jumlah').innerText = `Telah digunakan oleh ${total} orang`;
+            })
+            .catch(() => {
+                document.getElementById('teks-jumlah').innerText = "Telah digunakan oleh 0 orang";
+            });
+
+        // 2. Fungsi saat tombol benar-benar diklik (Nambah +1 secara global)
+        function tambahKlik(event) {
+            event.preventDefault();
+            const btn = document.getElementById('btn-am');
+            const linkAm = btn.href;
+            
+            btn.innerText = "MEMPROSES...";
+
+            // Memanggil API sekali lagi untuk memicu penambahan +1 di database global
+            fetch(countUrl)
+                .then(() => {
+                    window.location.href = linkAm;
+                })
+                .catch(() => {
+                    window.location.href = linkAm;
+                });
         }
     </script>
 </body>
