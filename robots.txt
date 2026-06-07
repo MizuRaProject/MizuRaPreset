@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://mizu-ra-preset.vercel.app/sitemap.xml
