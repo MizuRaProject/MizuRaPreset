@@ -6,7 +6,6 @@
     <title>MizuRa Preset</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Reset & Base Style */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         
         body { 
@@ -197,8 +196,66 @@
 
         .fixed-footer { position: fixed; bottom: 0; max-width: 450px; width: 100%; background: #0f1026; border-top: 1px solid rgba(255, 255, 255, 0.08); padding: 15px 20px; z-index: 99; }
         
-        .btn-download { display: none; width: 100%; text-align: center; padding: 14px; background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); color: #ffffff; font-weight: 600; font-size: 1rem; text-decoration: none; border-radius: 12px; transition: all 0.2s ease; box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3); }
+        /* Counter badge styling */
+        .counter-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        .counter-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0, 242, 254, 0.08);
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            border-radius: 20px;
+            padding: 5px 14px;
+            font-size: 0.78rem;
+            color: #00f2fe;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .counter-badge .count-number {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #ffffff;
+        }
+        .counter-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #00f2fe;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.8); }
+        }
+
+        .btn-download { 
+            display: none; 
+            width: 100%; 
+            text-align: center; 
+            padding: 14px; 
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); 
+            color: #ffffff; 
+            font-weight: 600; 
+            font-size: 1rem; 
+            text-decoration: none; 
+            border-radius: 12px; 
+            transition: all 0.2s ease; 
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
+            cursor: pointer;
+            border: none;
+        }
         .btn-download:active { transform: translateY(2px); }
+        .btn-download.loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+            background: linear-gradient(90deg, #3d8abf 0%, #00bcd4 100%);
+        }
     </style>
 </head>
 <body onclick="unmuteVideo()">
@@ -241,7 +298,6 @@
             </div>
             
             <div class="sound-notice" id="sound-tag">Muted - Ketuk Layar</div>
-            
             <div class="loading-text" id="loading-txt">Membaca Data...</div>
         </div>
 
@@ -257,9 +313,14 @@
         </div>
 
         <div class="fixed-footer">
-            <p id="teks-jumlah" style="text-align: center; font-size: 0.75rem; color: #4facfe; margin-bottom: 8px;">
-                Memuat jumlah pengunduh...
-            </p>
+            <div class="counter-wrapper">
+                <div class="counter-badge" id="counter-badge">
+                    <span class="counter-dot"></span>
+                    <span>Dipakai oleh</span>
+                    <span class="count-number" id="count-number">...</span>
+                    <span>orang</span>
+                </div>
+            </div>
             <a href="#" id="btn-am" class="btn-download" onclick="tambahKlik(event)">AMBIL PRESET DI SINI</a>
         </div>
     </div>
@@ -268,16 +329,52 @@
         const urlParams = new URLSearchParams(window.location.search);
         const presetId = urlParams.get('id') || 'preset1';
         const jsonUrl = 'https://raw.githubusercontent.com/suryahafiz100-cyber/MizuRaPreset/main/data.json';
-        
-        let videoEl = null;
 
+        // Bersihkan ID biar aman dipakai sebagai key
+        // Namespace = "mizurapreset", key = ID preset
+        const NAMESPACE = 'mizurapreset';
+        const COUNTER_KEY = presetId.replace(/[^a-zA-Z0-9_-]/g, '_');
+
+        // URL CountAPI — gratis, persistent, no-auth
+        // GET  = ambil nilai sekarang (tidak nambah)
+        // HIT  = nambah +1 sekaligus return nilai baru
+        const GET_URL = `https://api.countapi.xyz/get/${NAMESPACE}/${COUNTER_KEY}`;
+        const HIT_URL = `https://api.countapi.xyz/hit/${NAMESPACE}/${COUNTER_KEY}`;
+
+        let videoEl = null;
+        let linkAm = '#';
+        let isCounting = false;
+
+        /* ---- MENU ---- */
         function toggleMenu(show) {
             const sidebar = document.getElementById('sidebar-menu');
             const bg = document.getElementById('menu-bg');
-            if(show) { sidebar.classList.add('active'); bg.classList.add('active'); }
+            if (show) { sidebar.classList.add('active'); bg.classList.add('active'); }
             else { sidebar.classList.remove('active'); bg.classList.remove('active'); }
         }
 
+        /* ---- FORMAT ANGKA: 1000 → 1.000 ---- */
+        function formatAngka(n) {
+            return Number(n).toLocaleString('id-ID');
+        }
+
+        /* ---- TAMPILKAN JUMLAH (hanya baca, tidak nambah) ---- */
+        function tampilkanJumlah(value) {
+            const el = document.getElementById('count-number');
+            if (el) el.textContent = formatAngka(value);
+        }
+
+        /* ---- AMBIL DATA COUNTER SAAT HALAMAN DIBUKA ---- */
+        fetch(GET_URL)
+            .then(res => res.json())
+            .then(data => {
+                tampilkanJumlah(data.value ?? 0);
+            })
+            .catch(() => {
+                tampilkanJumlah(0);
+            });
+
+        /* ---- LOAD PRESET DATA ---- */
         if (presetId) {
             fetch(jsonUrl)
                 .then(res => res.json())
@@ -290,14 +387,14 @@
                         document.getElementById('creator-header').innerText = creatorName.replace('@', '');
                         document.getElementById('creator-username').innerText = creatorName.toLowerCase();
                         document.getElementById('avatar-initial').innerText = creatorName.replace('@', '').charAt(0).toUpperCase();
-                        if(preset.caption) document.getElementById('caption-preset').innerText = preset.caption;
-                        if(preset.tags) document.getElementById('tags-preset').innerText = preset.tags;
+                        if (preset.caption) document.getElementById('caption-preset').innerText = preset.caption;
+                        if (preset.tags) document.getElementById('tags-preset').innerText = preset.tags;
 
                         const container = document.getElementById('media-container');
                         const videoExtensions = ['.mp4', '.mov', '.avi'];
                         const isVideo = videoExtensions.some(ext => preset.link_video.toLowerCase().endsWith(ext));
 
-                        if(isVideo) {
+                        if (isVideo) {
                             container.insertAdjacentHTML('beforeend', `<video id="main-video" src="${preset.link_video}" autoplay loop muted playsinline></video>`);
                             document.getElementById('loading-txt').style.display = 'none';
                             videoEl = document.getElementById('main-video');
@@ -306,55 +403,60 @@
                             document.getElementById('loading-txt').style.display = 'none';
                             document.getElementById('sound-tag').style.display = 'none';
                         }
+
                         const btn = document.getElementById('btn-am');
+                        linkAm = preset.link_am;
                         btn.href = preset.link_am;
                         btn.style.display = 'block';
+
                     } else {
                         document.getElementById('loading-txt').innerText = "Preset Tidak Ditemukan!";
                     }
                 })
-                .catch(err => { console.error(err); document.getElementById('loading-txt').innerText = "Gagal Memuat Data!"; });
+                .catch(err => {
+                    console.error(err);
+                    document.getElementById('loading-txt').innerText = "Gagal Memuat Data!";
+                });
         }
 
+        /* ---- UNMUTE VIDEO ---- */
         function unmuteVideo() {
             if (videoEl) {
-                videoEl.muted = false; 
+                videoEl.muted = false;
                 document.getElementById('sound-tag').innerHTML = "Volume On";
                 setTimeout(() => { document.getElementById('sound-tag').style.display = 'none'; }, 1200);
             }
         }
 
-        // --- SISTEM PENGHITUNG BARU (LEBIH STABIL & REALTIME) --- //
-        const idAman = presetId.replace(/[^a-zA-Z0-9]/g, '_');
-        const countUrl = `https://count.getloli.com/get/@mizurapreset_${idAman}?theme=asoul`;
-
-        // 1. Ambil data saat web dibuka (Hanya melihat, tidak nambah klik)
-        fetch(countUrl)
-            .then(res => res.json())
-            .then(data => {
-                // Mengambil total angka dari server luar
-                const total = data.value || 0;
-                document.getElementById('teks-jumlah').innerText = `Telah digunakan oleh ${total} orang`;
-            })
-            .catch(() => {
-                document.getElementById('teks-jumlah').innerText = "Telah digunakan oleh 0 orang";
-            });
-
-        // 2. Fungsi saat tombol benar-benar diklik (Nambah +1 secara global)
+        /* ---- KLIK TOMBOL = HIT +1 LALU REDIRECT ---- */
         function tambahKlik(event) {
             event.preventDefault();
-            const btn = document.getElementById('btn-am');
-            const linkAm = btn.href;
-            
-            btn.innerText = "MEMPROSES...";
+            if (isCounting) return; // Cegah double klik
+            isCounting = true;
 
-            // Memanggil API sekali lagi untuk memicu penambahan +1 di database global
-            fetch(countUrl)
-                .then(() => {
-                    window.location.href = linkAm;
+            const btn = document.getElementById('btn-am');
+            btn.innerText = "MEMPROSES...";
+            btn.classList.add('loading');
+
+            // HIT: nambah +1 dan dapat nilai terbaru
+            fetch(HIT_URL)
+                .then(res => res.json())
+                .then(data => {
+                    // Update tampilan angka ke nilai terbaru
+                    tampilkanJumlah(data.value ?? 0);
                 })
                 .catch(() => {
+                    // Kalau gagal, tetap redirect
+                })
+                .finally(() => {
+                    // Redirect ke link preset
                     window.location.href = linkAm;
+                    // Reset tombol setelah 2 detik (jika user kembali)
+                    setTimeout(() => {
+                        btn.innerText = "AMBIL PRESET DI SINI";
+                        btn.classList.remove('loading');
+                        isCounting = false;
+                    }, 2000);
                 });
         }
     </script>
