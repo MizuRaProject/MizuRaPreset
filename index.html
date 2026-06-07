@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memuat Preset...</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Reset & Base Style */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        
+        /* Background gradasi biru tua/ungu gelap elegan mirip screenshot */
+        body { 
+            background: linear-gradient(180deg, #181935 0%, #0c0d1a 100%); 
+            color: #ffffff; 
+            min-height: 100vh; 
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+        }
+        
+        /* Container Utama Mobile App Style */
+        .wrapper { 
+            width: 100%;
+            max-width: 450px; 
+            background: #0f1026;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            padding-bottom: 120px; /* Jarak aman tombol bawah */
+        } 
+        
+        /* Box Media / Tempat Video (Rasio 9:16 Pas Layar HP) */
+        .media-box { 
+            position: relative; 
+            width: 100%; 
+            aspect-ratio: 9 / 16; 
+            background: #050510; 
+            overflow: hidden;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        .media-box video, .media-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        
+        /* Overlay Info di Atas Video (Nama Creator & Tombol Share) */
+        .top-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.6), rgba(0,0,0,0));
+            z-index: 10;
+        }
+        .creator-info { display: flex; align-items: center; gap: 10px; }
+        .avatar { width: 40px; height: 40px; background: #333; border-radius: 50%; border: 2px solid #00f2fe; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem; }
+        .creator-text h2 { font-size: 0.95rem; font-weight: 600; color: #fff; }
+        .creator-text p { font-size: 0.8rem; color: #bbb; }
+        
+        /* Tombol Share Pojok Kanan Atas */
+        .share-btn { width: 36px; height: 36px; background: rgba(255,255,255,0.15); backdrop-filter: blur(5px); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; border: 1px solid rgba(255,255,255,0.2); }
+
+        /* Teks Deskripsi di Bawah Video (Mirip Persis Tangkapan Layar) */
+        .content-info { padding: 20px; text-align: left; }
+        .content-info h1 { font-size: 1.2rem; font-weight: 700; margin-bottom: 5px; color: #ffffff; }
+        .content-info .caption { font-size: 0.9rem; color: #d1d1e0; line-height: 1.5; margin-bottom: 10px; }
+        .content-info .tags { font-size: 0.85rem; color: #4facfe; font-weight: 500; }
+
+        /* Card Soft White di Bagian Paling Bawah (Senjata Wajib) */
+        .additional-card {
+            margin: 15px 20px;
+            background: #f4f5fa;
+            color: #222;
+            padding: 20px;
+            border-radius: 18px;
+            text-align: left;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .additional-card h3 { font-size: 1rem; font-weight: 700; color: #0f1026; margin-bottom: 5px; }
+        .additional-card p { font-size: 0.85rem; color: #666; line-height: 1.4; }
+
+        /* Teks Loading saat Fetch Data */
+        .loading-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #888; font-size: 1rem; z-index: 5; }
+
+        /* Box Tombol Floating di Bawah */
+        .fixed-footer { position: fixed; bottom: 0; max-width: 450px; width: 100%; background: #0f1026; border-top: 1px solid rgba(255, 255, 255, 0.08); padding: 15px 20px; z-index: 99; }
+        
+        /* Tombol Premium Biru-Cyan Khas Kyuka */
+        .btn-download { display: none; width: 100%; text-align: center; padding: 14px; background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); color: #ffffff; font-weight: 600; font-size: 1rem; text-decoration: none; border-radius: 12px; transition: all 0.2s ease; box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3); }
+        .btn-download:active { transform: translateY(2px); }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <div class="media-box" id="media-container">
+            <div class="top-overlay">
+                <div class="creator-info">
+                    <div class="avatar" id="avatar-initial">M</div>
+                    <div class="creator-text">
+                        <h2 id="creator-header">Creator</h2>
+                        <p id="creator-username">@username</p>
+                    </div>
+                </div>
+                <div class="share-btn">🔗</div>
+            </div>
+            
+            <div class="loading-text" id="loading-txt">Membaca Data...</div>
+        </div>
+
+        <div class="content-info">
+            <h1 id="judul-preset">Memuat Judul...</h1>
+            <p class="caption" id="caption-preset">Silahkan tunggu, robot sedang mengambil file preset kece pilihanmu dari server.</p>
+            <p class="tags" id="tags-preset">#preset #alightmotion #jedagjedug</p>
+        </div>
+
+        <div class="additional-card">
+            <h3>Senjata Wajib Editor 🔥</h3>
+            <p>Gunakan Alight Motion versi terbaru agar preset dapat di-import dengan sempurna tanpa error atau missing files.</p>
+        </div>
+
+        <div class="fixed-footer">
+            <a href="#" id="btn-am" class="btn-download">AMBIL PRESET DI SINI</a>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const presetId = urlParams.get('id');
+
+        // SUDAH OTOMATIS LINK AKUN GITHUB LU, TUAN
+        const jsonUrl = 'https://raw.githubusercontent.com/suryahafiz100-cyber/MizuRaPreset/main/data.json';
+
+        if (presetId) {
+            fetch(jsonUrl)
+                .then(res => res.json())
+                .then(data => {
+                    const preset = data.find(item => item.id === presetId);
+
+                    if (preset) {
+                        document.getElementById('loading-txt').style.display = 'none';
+
+                        // Ambil & Update Data dari data.json
+                        document.title = preset.judul + " by " + (preset.creator || "Creator");
+                        document.getElementById('judul-preset').innerText = preset.judul;
+                        
+                        // Set Nama Creator
+                        const creatorName = preset.creator || "@creator";
+                        document.getElementById('creator-header').innerText = creatorName.replace('@', '');
+                        document.getElementById('creator-username').innerText = creatorName.toLowerCase();
+                        document.getElementById('avatar-initial').innerText = creatorName.replace('@', '').charAt(0).toUpperCase();
+                        
+                        // Set Caption / Hashtag jika ada di json
+                        if(preset.caption) document.getElementById('caption-preset').innerText = preset.caption;
+                        if(preset.tags) document.getElementById('tags-preset').innerText = preset.tags;
+
+                        // Menampilkan Media Video/Foto
+                        const container = document.getElementById('media-container');
+                        const videoExtensions = ['.mp4', '.mov', '.avi'];
+                        const isVideo = videoExtensions.some(ext => preset.link_video.toLowerCase().endsWith(ext));
+
+                        if(isVideo) {
+                            container.insertAdjacentHTML('beforeend', `<video src="${preset.link_video}" autoplay loop muted playsinline style="width:100%; height:100%; object-fit:cover;"></video>`);
+                        } else {
+                            container.insertAdjacentHTML('beforeend', `<img src="${preset.link_video || preset.link_foto}" alt="Preview" style="width:100%; height:100%; object-fit:cover;">`);
+                        }
+
+                        // Tampilkan tombol & Pasang Link AM
+                        const btn = document.getElementById('btn-am');
+                        btn.href = preset.link_am;
+                        btn.style.display = 'block';
+                    } else {
+                        document.getElementById('judul-preset').innerText = "Preset Tidak Ditemukan!";
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    document.getElementById('judul-preset').innerText = "Gagal Memuat Data!";
+                });
+        } else {
+            document.getElementById('judul-preset').innerText = "Kumpulan Preset Editor Kece!!";
+            document.getElementById('caption-preset').innerText = "Silahkan pilih preset melalui link resmi di Bio TikTok/IG creator.";
+            document.getElementById('loading-txt').innerText = "Gunakan link ber-ID, Tuan.";
+        }
+    </script>
+</body>
+</html>
