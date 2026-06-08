@@ -259,7 +259,7 @@
         
         <div class="media-box" id="media-container">
             <div class="top-overlay">
-                <a href="/" class="btn-back-home">
+                <a href="home.html" class="btn-back-home">
                     <span>⬅</span> BALIK
                 </a>
                 <div class="creator-info">
@@ -313,9 +313,15 @@
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        const presetId = urlParams.get('id') || 'preset1';
+        const presetId = urlParams.get('id');
+
+        // AUTO-REDIRECT KE HOME JIKA DOMAIN UTAMA DIAKSES TANPA PARAMETER ID PRESET
+        if (!presetId) {
+            window.location.href = 'home.html';
+        }
+
         const jsonUrl = 'https://raw.githubusercontent.com/suryahafiz100-cyber/MizuRaPreset/main/data.json';
-        const COUNTER_KEY = 'mizurapreset__' + presetId.replace(/[^a-zA-Z0-9_-]/g, '_');
+        const COUNTER_KEY = 'mizurapreset__' + (presetId ? presetId.replace(/[^a-zA-Z0-9_-]/g, '_') : 'default');
         const HIT_URL = `https://countapi.mileshilliard.com/api/v1/hit/${COUNTER_KEY}`;
         const GET_URL = `https://countapi.mileshilliard.com/api/v1/get/${COUNTER_KEY}`;
         let videoEl = null;
