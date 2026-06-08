@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MizuRa Preset - Premium Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Reset & Base Premium Style */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        
+        body { 
+            background: #060713;
+            color: #ffffff; 
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        /* Ambient Glow Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -10%; right: -20%;
+            width: 300px; height: 300px;
+            background: rgba(0, 242, 254, 0.15);
+            filter: blur(120px);
+            border-radius: 50%;
+            z-index: -1;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -10%; left: -20%;
+            width: 300px; height: 300px;
+            background: rgba(79, 172, 254, 0.15);
+            filter: blur(120px);
+            border-radius: 50%;
+            z-index: -1;
+        }
+
+        .wrapper { 
+            width: 100%;
+            max-width: 450px; 
+            background: rgba(15, 16, 38, 0.5);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            min-height: 100vh;
+            padding: 24px 20px;
+            padding-bottom: 60px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.6);
+            border-left: 1px solid rgba(255, 255, 255, 0.03);
+            border-right: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        /* Header Premium */
+        .brand-header {
+            text-align: center;
+            margin-bottom: 28px;
+            position: relative;
+        }
+        .brand-header h1 { 
+            font-size: 1.8rem; 
+            font-weight: 700; 
+            background: linear-gradient(45deg, #00f2fe, #4facfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+        }
+        .brand-header p {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 4px;
+        }
+
+        h2 { 
+            font-size: 1.05rem; 
+            font-weight: 600; 
+            margin: 30px 0 16px 0; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            color: rgba(255, 255, 255, 0.9);
+        }
+        h2 span.icon-tag {
+            background: rgba(0, 242, 254, 0.1);
+            color: #00f2fe;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        /* Leaderboard Neon Glass Style */
+        .leaderboard-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 12px 16px;
+            border-radius: 14px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+        .leaderboard-item:active {
+            transform: scale(0.98);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .leaderboard-item.rank-1 { 
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.08) 0%, rgba(255,255,255,0.02) 100%); 
+            border-color: rgba(255, 215, 0, 0.2);
+        }
+        .leaderboard-item.rank-2 { 
+            background: linear-gradient(90deg, rgba(200, 200, 200, 0.08) 0%, rgba(255,255,255,0.02) 100%); 
+            border-color: rgba(200, 200, 200, 0.15);
+        }
+
+        .rank-info { display: flex; align-items: center; gap: 14px; }
+        .rank-num { font-weight: 700; font-size: 0.95rem; color: rgba(255,255,255,0.3); width: 22px; text-align: center; }
+        
+        .leaderboard-item.rank-1 .rank-num { color: #ffd700; font-size: 1.1rem; }
+        .leaderboard-item.rank-2 .rank-num { color: #c0c0c0; }
+        .leaderboard-item.rank-3 .rank-num { color: #cd7f32; }
+
+        .creator-avatar { 
+            width: 36px; height: 36px; 
+            background: #13152e; 
+            border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            font-weight: 700; font-size: 0.85rem; 
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+        .rank-1 .creator-avatar { border-color: #ffd700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
+        
+        .creator-name { font-size: 0.9rem; font-weight: 500; color: rgba(255,255,255,0.85); }
+        .preset-count { 
+            font-size: 0.75rem; 
+            background: rgba(255, 255, 255, 0.05); 
+            color: rgba(255,255,255,0.7); 
+            padding: 6px 12px; 
+            border-radius: 20px; 
+            font-weight: 600; 
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .rank-1 .preset-count { background: rgba(255, 215, 0, 0.15); color: #ffd700; border-color: rgba(255, 215, 0, 0.2); }
+
+        /* Video/Preset Grid Layout Modern */
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+        .preset-card {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            text-decoration: none;
+            color: #fff;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        .preset-card:active { transform: scale(0.96); border-color: #00f2fe; }
+        
+        .media-preview {
+            width: 100%;
+            height: 230px; 
+            background: #03040b;
+            position: relative;
+            overflow: hidden;
+        }
+        .media-preview video, .media-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .video-badge {
+            position: absolute;
+            top: 10px; right: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            color: #00f2fe;
+            z-index: 2;
+            font-weight: 600;
+            border: 1px solid rgba(0, 242, 254, 0.2);
+        }
+
+        .media-preview::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 40%;
+            background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .card-info { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; position: relative; z-index: 2; }
+        .card-title { 
+            font-size: 0.82rem; 
+            font-weight: 500; 
+            line-height: 1.4; 
+            color: rgba(255, 255, 255, 0.9);
+            height: 2.8em; 
+            overflow: hidden; 
+            display: -webkit-box; 
+            -webkit-line-clamp: 2; 
+            -webkit-box-orient: vertical; 
+        }
+        .card-creator { 
+            font-size: 0.72rem; 
+            color: #00f2fe; 
+            margin-top: 6px; 
+            font-weight: 500;
+            opacity: 0.8;
+            display: inline-block;
+            width: fit-content;
+        }
+        .card-creator:hover {
+            text-decoration: underline;
+        }
+        
+        .loading { text-align: center; color: rgba(255, 255, 255, 0.3); font-size: 0.85rem; padding: 30px; width: 100%; grid-column: span 2; }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <div class="brand-header">
+            <h1>MizuRa Project</h1>
+            <p>Premium Creative Center</p>
+        </div>
+
+        <h2><span class="icon-tag">🏆</span> Top Creator Board</h2>
+        <div class="leaderboard-box" id="leaderboard-container">
+            <div class="loading">Menganalisis kontribusi kreator...</div>
+        </div>
+
+        <h2><span class="icon-tag">⚡</span> Explore Presets</h2>
+        <div class="preset-grid" id="grid-container">
+            <div class="loading">Memuat galeri video...</div>
+        </div>
+    </div>
+
+    <script>
+        const jsonUrl = 'https://raw.githubusercontent.com/suryahafiz100-cyber/MizuRaPreset/main/data.json';
+
+        fetch(jsonUrl)
+            .then(res => res.json())
+            .then(data => {
+                buatLeaderboard(data);
+                buatGridPreset(data);
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById('leaderboard-container').innerHTML = '<div class="loading">Gagal memuat data statistik</div>';
+                document.getElementById('grid-container').innerHTML = '<div class="loading">Gagal sinkronisasi data video</div>';
+            });
+
+        function buatLeaderboard(data) {
+            const hitungCreator = {};
+
+            data.forEach(item => {
+                const nama = item.creator || '@Anonim';
+                hitungCreator[nama] = (hitungCreator[nama] || 0) + 1;
+            });
+
+            const listUrut = Object.keys(hitungCreator).map(nama => {
+                return { nama: nama, total: hitungCreator[nama] };
+            });
+
+            listUrut.sort((a, b) => b.total - a.total);
+
+            const container = document.getElementById('leaderboard-container');
+            container.innerHTML = '';
+
+            listUrut.slice(0, 4).forEach((creator, index) => {
+                const namaBersih = creator.nama.replace('@', '');
+                const inisial = namaBersih.charAt(0).toUpperCase();
+                const rankClass = index === 0 ? 'rank-1' : (index === 1 ? 'rank-2' : '');
+                const trofi = index === 0 ? '👑' : `#${index + 1}`;
+
+                // SEKARANG BISA DIKLIK: Mengarah ke halaman profile.html membawa parameter nama kreator
+                const html = `
+                    <div class="leaderboard-item ${rankClass}" onclick="bukaProfil('${creator.nama}')">
+                        <div class="rank-info">
+                            <span class="rank-num">${trofi}</span>
+                            <div class="creator-avatar">${inisial}</div>
+                            <span class="creator-name">${creator.nama}</span>
+                        </div>
+                        <span class="preset-count">${creator.total} </span>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        function buatGridPreset(data) {
+            const container = document.getElementById('grid-container');
+            container.innerHTML = '';
+
+            data.forEach(item => {
+                const videoExtensions = ['.mp4', '.mov', '.avi'];
+                const isVideo = videoExtensions.some(ext => item.link_video.toLowerCase().endsWith(ext));
+                
+                let mediaHtml = '';
+                let badgeHtml = '';
+
+                if (isVideo) {
+                    badgeHtml = `<span class="video-badge">▶ PLAY</span>`;
+                    mediaHtml = `
+                        <video 
+                            class="mizura-preview-video"
+                            src="${item.link_video}" 
+                            preload="metadata" 
+                            loop 
+                            muted 
+                            playsinline>
+                        </video>`;
+                } else {
+                    mediaHtml = `<img src="${item.link_video}" loading="lazy">`;
+                }
+
+                // DITAMBAHKAN: onclick="bukaProfil" pada teks nama kreator dengan stopPropagation agar tidak bentrok dengan klik detail video
+                const cardHtml = `
+                    <div class="preset-card" onclick="bukaPreset(event, '${item.id}')">
+                        <div class="media-preview">
+                            ${badgeHtml}
+                            ${mediaHtml}
+                        </div>
+                        <div class="card-info">
+                            <div class="card-title">${item.judul}</div>
+                            <div class="card-creator" onclick="event.stopPropagation(); bukaProfil('${item.creator || '@creator'}')">
+                                ${item.creator || '@creator'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', cardHtml);
+            });
+
+            inisialisasiKontrolVideo();
+        }
+
+        // Fungsi navigasi ke detail preset
+        function bukaPreset(event, id) {
+            window.location.href = `index.html?id=${id}`;
+        }
+
+        // FUNGSI BARU: Akses profil secara dinamis
+        function bukaProfil(namaKreator) {
+            window.location.href = `profile.html?user=${encodeURIComponent(namaKreator)}`;
+        }
+
+        // SISTEM DETEKSI SCROLL & GESTURE VIDEO
+        function inisialisasiKontrolVideo() {
+            const semuaVideo = document.querySelectorAll('.mizura-preview-video');
+
+            const sensorLayar = new IntersectionObserver((daftarVideo) => {
+                daftarVideo.forEach(v => {
+                    if (!v.isIntersecting) {
+                        v.target.pause();
+                        v.target.currentTime = 0;
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            semuaVideo.forEach(video => {
+                sensorLayar.observe(video);
+
+                const penampung = video.closest('.preset-card');
+
+                // PC User
+                penampung.addEventListener('mouseenter', () => video.play().catch(()=>{}));
+                penampung.addEventListener('mouseleave', () => {
+                    video.pause();
+                    video.currentTime = 0;
+                });
+
+                // HP/Mobile User
+                penampung.addEventListener('touchstart', (e) => {
+                    semuaVideo.forEach(vid => { if(vid !== video) { vid.pause(); vid.currentTime = 0; } });
+                    video.play().catch(()=>{});
+                }, { passive: true });
+
+                penampung.addEventListener('touchend', () => {
+                    setTimeout(() => {
+                        video.pause();
+                        video.currentTime = 0;
+                    }, 300);
+                }, { passive: true });
+            });
+        }
+    </script>
+</body>
+</html>
