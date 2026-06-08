@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+        <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -66,6 +66,7 @@
             background: rgba(255, 255, 255, 0.02); border-radius: 18px; overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.04); text-decoration: none; color: #fff;
             display: flex; flex-direction: column;
+            cursor: pointer;
         }
         
         .media-preview { width: 100%; height: 210px; background: #03040b; position: relative; overflow: hidden; }
@@ -141,11 +142,14 @@
         const ADSTERRA_KEY = '9d8c7a557a4e4cd8023a8b293498cb2d'; 
 
         const urlParams = new URLSearchParams(window.location.search);
-        const creatorTarget = urlParams.get('user'); 
+        let creatorTarget = urlParams.get('user') || ''; 
         
-        // PENGATURAN LINK LOCAL (Biar sama dengan index.html dan home.html)
-        const jsonUrl = 'data.json';
-        const profilJsonUrl = 'foto_profil.json';
+        // Bersihkan data parameter jika ada whitespace atau double symbol
+        creatorTarget = creatorTarget.trim().toLowerCase();
+
+        // Menggunakan URL Raw GitHub yang sama persis seperti di home.html & index.html Anda
+        const jsonUrl = 'https://raw.githubusercontent.com/suryahafiz100-cyber/MizuRaPreset/main/data.json';
+        const profilJsonUrl = 'https://raw.githubusercontent.com/suryahafiz100-cyber/MizuRaPreset/main/foto_profil.json';
 
         if (creatorTarget) {
             Promise.all([
@@ -153,10 +157,15 @@
                 fetch(profilJsonUrl).then(res => res.json()).catch(() => ({}))
             ])
             .then(([data, fotoProfil]) => {
-                const kepinganPreset = data.filter(item => (item.creator || '').toLowerCase() === creatorTarget.toLowerCase());
+                // SINKRONISASI COCOK NAMA: mengabaikan simbol @ dan sensitivitas huruf besar/kecil
+                const kepinganPreset = data.filter(item => {
+                    const namaItem = (item.creator || '').trim().toLowerCase();
+                    return namaItem === creatorTarget || 
+                           namaItem.replace('@', '') === creatorTarget.replace('@', '');
+                });
                 
                 if (kepinganPreset.length > 0) {
-                    const namaAsli = kepinganPreset[0].creator;
+                    const namaAsli = kepinganPreset[0].creator || '@Creator';
                     document.getElementById('prof-name').innerText = namaAsli.replace('@', '');
                     document.getElementById('prof-username').innerText = namaAsli.toLowerCase();
                     document.getElementById('stat-preset').innerText = kepinganPreset.length;
@@ -174,13 +183,16 @@
                     muatIklanAdsterra();
                 } else {
                     document.getElementById('prof-name').innerText = "Kreator Tidak Ditemukan";
-                    document.getElementById('profile-grid').innerHTML = '<div class="loading">Belum ada preset terdaftar.</div>';
+                    document.getElementById('profile-grid').innerHTML = '<div class="loading">Belum ada preset terdaftar untuk kreator ini.</div>';
                 }
             })
             .catch((err) => {
                 console.error(err);
                 document.getElementById('profile-grid').innerHTML = '<div class="loading">Gagal memuat profil</div>';
             });
+        } else {
+            document.getElementById('prof-name').innerText = "Kreator Tidak Valid";
+            document.getElementById('profile-grid').innerHTML = '<div class="loading">Parameter user kosong.</div>';
         }
 
         function bikinGridKreator(presetList) {
@@ -196,7 +208,7 @@
                     : `<img src="${item.link_video}" loading="lazy">`;
 
                 const cardHtml = ` 
-                    <div class="preset-card" onclick="location.href='index.html?id=${item.id}'">
+                    <div class="preset-card" onclick="location.href='index.html?id=${encodeURIComponent(item.id)}'">
                         <div class="media-preview">${mediaHtml}</div>
                         <div class="card-info">
                             <div class="card-title">${item.judul}</div>
