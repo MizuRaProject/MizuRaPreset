@@ -138,13 +138,14 @@
     </div>
 
     <script>
-        // ISI KODE BERDASARKAN AKUN ADSTERRA LU, TUAN
         const ADSTERRA_KEY = '9d8c7a557a4e4cd8023a8b293498cb2d'; 
 
         const urlParams = new URLSearchParams(window.location.search);
         const creatorTarget = urlParams.get('user'); 
-        const jsonUrl = 'https://raw.githubusercontent.com/suryahafiz100-cyber/MizuRaPreset/main/data.json';
-        const profilJsonUrl = 'https://raw.githubusercontent.com/suryahafiz100-cyber/MizuRaPreset/main/foto_profil.json';
+        
+        // PENGATURAN LINK LOCAL (Biar sama dengan index.html dan home.html)
+        const jsonUrl = 'data.json';
+        const profilJsonUrl = 'foto_profil.json';
 
         if (creatorTarget) {
             Promise.all([
@@ -170,7 +171,6 @@
                     }
 
                     bikinGridKreator(kepinganPreset);
-                    // PANGGIL IKLAN SETELAH DATA SELESAI DI-LOAD AGAR TIDAK BENTROK
                     muatIklanAdsterra();
                 } else {
                     document.getElementById('prof-name').innerText = "Kreator Tidak Ditemukan";
@@ -229,12 +229,10 @@
             });
         }
 
-        // SISTEM INJECT AUTOMATION ADSTERRA
         function muatIklanAdsterra() {
             try {
                 const container = document.getElementById('adsterra-space');
                 
-                // Set parameter opsi
                 window.atOptions = {
                     'key' : ADSTERRA_KEY,
                     'format' : 'iframe',
@@ -243,7 +241,6 @@
                     'params' : {}
                 };
 
-                // Membuat tag script eksternal pemanggil secara mandiri
                 const scriptAd = document.createElement('script');
                 scriptAd.type = 'text/javascript';
                 scriptAd.src = `https://www.highperformanceformat.com/${ADSTERRA_KEY}/invoke.js`;
