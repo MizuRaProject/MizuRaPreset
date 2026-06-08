@@ -241,6 +241,31 @@
         }
         
         .loading { text-align: center; color: rgba(255, 255, 255, 0.3); font-size: 0.85rem; padding: 30px; width: 100%; grid-column: span 2; }
+
+        /* Ad Container - Blends with premium glass theme, non-intrusive */
+        .ad-container {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            padding: 16px 12px 12px;
+            max-width: 320px;
+            margin: 0 auto 20px auto;
+            text-align: center;
+        }
+        .ad-label {
+            font-size: 0.62rem;
+            color: rgba(255,255,255,0.35);
+            letter-spacing: 2.5px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        .ad-inner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 250px;
+        }
     </style>
 </head>
 <body>
@@ -254,6 +279,25 @@
         <h2><span class="icon-tag">🏆</span> Top Creator Board</h2>
         <div class="leaderboard-box" id="leaderboard-container">
             <div class="loading">Menganalisis kontribusi kreator...</div>
+        </div>
+
+        <!-- AD SECTION - Placed after leaderboard (user sees community first), before Explore Presets -->
+        <!-- Styling matches the glass/neon theme so it feels natural, not intrusive -->
+        <h2><span class="icon-tag">✨</span> Partner Inspiration</h2>
+        <div class="ad-container">
+            <div class="ad-label">SPONSORED</div>
+            <div class="ad-inner">
+                <script>
+                  atOptions = {
+                    'key' : '9d8c7a557a4e4cd8023a8b293498cb2d',
+                    'format' : 'iframe',
+                    'height' : 250,
+                    'width' : 300,
+                    'params' : {}
+                  };
+                </script>
+                <script src="https://www.highperformanceformat.com/9d8c7a557a4e4cd8023a8b293498cb2d/invoke.js"></script>
+            </div>
         </div>
 
         <h2><span class="icon-tag">⚡</span> Explore Presets</h2>
@@ -301,7 +345,7 @@
                 const trofi = index === 0 ? '👑' : `#${index + 1}`;
 
                 const html = `
-                    <div class="leaderboard-item ${rankClass}" onclick="bukaProfil('${creator.nama}')">
+                    <div class="leaderboard-item \( {rankClass}" onclick="bukaProfil(' \){creator.nama}')">
                         <div class="rank-info">
                             <span class="rank-num">${trofi}</span>
                             <div class="creator-avatar">${inisial}</div>
@@ -396,7 +440,7 @@
                 // HP/Mobile User
                 penampung.addEventListener('touchstart', (e) => {
                     semuaVideo.forEach(vid => { if(vid !== video) { vid.pause(); vid.currentTime = 0; } });
-                    video.play().catch(()=>{});
+                    video.play().catch(()=>{}); 
                 }, { passive: true });
 
                 penampung.addEventListener('touchend', () => {
