@@ -1,270 +1,233 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MizuRa Preset - Profil Creator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        
-        body { 
-            background: #060713; color: #ffffff; min-height: 100vh;
-            display: flex; justify-content: center; overflow-x: hidden;
-        }
+<!DOCTYPE html> 
+<html lang="id"> 
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>MizuRa Preset - Profil Creator</title> 
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"> 
+    <style> 
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; } 
+         
+        body {  
+            background: #060713; color: #ffffff; min-height: 100vh; 
+            display: flex; justify-content: center; overflow-x: hidden; 
+        } 
+        body::before { 
+            content: ''; position: fixed; top: -10%; left: -20%; width: 300px; height: 300px; 
+            background: rgba(0, 242, 254, 0.12); filter: blur(120px); border-radius: 50%; z-index: -1; 
+        } 
+        .wrapper {  
+            width: 100%; max-width: 450px; background: rgba(15, 16, 38, 0.5); 
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); 
+            min-height: 100vh; padding: 24px 20px; padding-bottom: 40px; 
+            box-shadow: 0 0 40px rgba(0,0,0,0.6); 
+            border-left: 1px solid rgba(255, 255, 255, 0.03); border-right: 1px solid rgba(255, 255, 255, 0.03); 
+        } 
+        .header-nav { display: flex; align-items: center; margin-bottom: 25px; } 
+        .btn-back {  
+            text-decoration: none; color: #fff; background: rgba(255,255,255,0.05);  
+            padding: 8px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; 
+            border: 1px solid rgba(255,255,255,0.08); 
+        } 
+        .profile-header { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 30px; } 
+        .profile-avatar-container { 
+            width: 80px; height: 80px; background: #13152e; border-radius: 50%;  
+            display: flex; align-items: center; justify-content: center;  
+            border: 3px solid #00f2fe; overflow: hidden; 
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.2); margin-bottom: 12px; 
+        } 
+        .profile-avatar-container img { width: 100%; height: 100%; object-fit: cover; } 
+        .profile-avatar-container .avatar-text { font-weight: 700; font-size: 2rem; color: #fff; } 
+        .profile-name { font-size: 1.3rem; font-weight: 700; color: #fff; } 
+        .profile-username { font-size: 0.85rem; color: #00f2fe; margin-bottom: 15px; font-weight: 500; } 
+        .stats-box {  
+            display: flex; gap: 20px; background: rgba(255,255,255,0.02);  
+            padding: 12px 30px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.05); 
+        } 
+        .stat-item { display: flex; flex-direction: column; align-items: center; } 
+        .stat-val { font-size: 1.1rem; font-weight: 700; color: #fff; } 
+        .stat-lbl { font-size: 0.75rem; color: rgba(255,255,255,0.4); text-transform: uppercase; margin-top: 2px; } 
+        h3 { font-size: 1rem; font-weight: 600; margin-bottom: 16px; color: rgba(255,255,255,0.6); border-bottom: 2px solid #00f2fe; display: inline-block; padding-bottom: 4px; } 
+        .preset-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; } 
+        .preset-card {  
+            background: rgba(255, 255, 255, 0.02); border-radius: 18px; overflow: hidden; 
+            border: 1px solid rgba(255, 255, 255, 0.04); text-decoration: none; color: #fff; 
+            display: flex; flex-direction: column; cursor: pointer; 
+        } 
+        .media-preview { width: 100%; height: 210px; background: #03040b; position: relative; overflow: hidden; } 
+        .media-preview video, .media-preview img { width: 100%; height: 100%; object-fit: cover; display: block; } 
+        .media-preview::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 40%; background: linear-gradient(to top, rgba(0,0,0,0.6), transparent); pointer-events: none; } 
+        .card-info { padding: 12px; } 
+        .card-title { font-size: 0.8rem; font-weight: 500; line-height: 1.4; color: rgba(255, 255, 255, 0.9); height: 2.8em; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; } 
+        .loading { text-align: center; color: rgba(255, 255, 255, 0.3); font-size: 0.85rem; padding: 30px; width: 100%; grid-column: span 2; } 
+        .ad-container { 
+            background: rgba(255, 255, 255, 0.02); 
+            border: 1px solid rgba(255, 255, 255, 0.06); 
+            border-radius: 18px; padding: 12px 10px 10px; 
+            max-width: 320px; margin: 10px auto 20px auto; text-align: center; 
+        } 
+        .ad-label { 
+            font-size: 0.58rem; color: rgba(255,255,255,0.3); letter-spacing: 2px; 
+            margin-bottom: 8px; text-transform: uppercase; font-weight: 600; 
+        } 
+        .ad-inner { display: flex; justify-content: center; align-items: center; min-height: 250px; } 
+    </style> 
+</head> 
+<body> 
+    <div class="wrapper"> 
+        <div class="header-nav"> 
+            <a href="home.html" class="btn-back">⬅ KEMBALI</a> 
+        </div> 
+        <div class="profile-header"> 
+            <div class="profile-avatar-container" id="prof-avatar-box"> 
+                <span class="avatar-text" id="prof-avatar">-</span> 
+            </div> 
+            <div class="profile-name" id="prof-name">Memuat...</div> 
+            <div class="profile-username" id="prof-username">@...</div> 
+            <div class="stats-box"> 
+                <div class="stat-item"> 
+                    <span class="stat-val" id="stat-preset">0</span> 
+                    <span class="stat-lbl">Presets</span> 
+                </div> 
+            </div> 
+        </div> 
+        <div class="ad-container"> 
+            <div class="ad-label">SPONSORED</div> 
+            <div class="ad-inner" id="adsterra-space"></div> 
+        </div> 
+        <h3>Karya Video</h3> 
+        <div class="preset-grid" id="profile-grid"> 
+            <div class="loading">Memuat video kreator...</div> 
+        </div> 
+    </div> 
 
-        /* Ambient Glow Background */
-        body::before {
-            content: ''; position: fixed; top: -10%; left: -20%; width: 300px; height: 300px;
-            background: rgba(0, 242, 254, 0.12); filter: blur(120px); border-radius: 50%; z-index: -1;
-        }
+    <script> 
+        const ADSTERRA_KEY = '9d8c7a557a4e4cd8023a8b293498cb2d';  
 
-        .wrapper { 
-            width: 100%; max-width: 450px; background: rgba(15, 16, 38, 0.5);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            min-height: 100vh; padding: 24px 20px; padding-bottom: 40px;
-            box-shadow: 0 0 40px rgba(0,0,0,0.6);
-            border-left: 1px solid rgba(255, 255, 255, 0.03); border-right: 1px solid rgba(255, 255, 255, 0.03);
-        }
+        const urlParams = new URLSearchParams(window.location.search); 
+        let rawParam = urlParams.get('user') || '';  
 
-        /* Tombol Back ala TikTok */
-        .header-nav { display: flex; align-items: center; margin-bottom: 25px; }
-        .btn-back { 
-            text-decoration: none; color: #fff; background: rgba(255,255,255,0.05); 
-            padding: 8px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
-            border: 1px solid rgba(255,255,255,0.08);
-        }
-
-        /* Header Profil */
-        .profile-header { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 30px; }
-        .profile-avatar-container {
-            width: 80px; height: 80px; background: #13152e; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; 
-            border: 3px solid #00f2fe; overflow: hidden;
-            box-shadow: 0 0 20px rgba(0, 242, 254, 0.2); margin-bottom: 12px;
-        }
-        .profile-avatar-container img { width: 100%; height: 100%; object-fit: cover; }
-        .profile-avatar-container .avatar-text { font-weight: 700; font-size: 2rem; color: #fff; }
-        
-        .profile-name { font-size: 1.3rem; font-weight: 700; color: #fff; }
-        .profile-username { font-size: 0.85rem; color: #00f2fe; margin-bottom: 15px; font-weight: 500; }
-        
-        /* Statistik Kreator */
-        .stats-box { 
-            display: flex; gap: 20px; background: rgba(255,255,255,0.02); 
-            padding: 12px 30px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.05);
-        }
-        .stat-item { display: flex; flex-direction: column; align-items: center; }
-        .stat-val { font-size: 1.1rem; font-weight: 700; color: #fff; }
-        .stat-lbl { font-size: 0.75rem; color: rgba(255,255,255,0.4); text-transform: uppercase; margin-top: 2px; }
-
-        /* Bagian Konten/Grid Video */
-        h3 { font-size: 1rem; font-weight: 600; margin-bottom: 16px; color: rgba(255,255,255,0.6); border-bottom: 2px solid #00f2fe; display: inline-block; padding-bottom: 4px; }
-        
-        .preset-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
-        .preset-card { 
-            background: rgba(255, 255, 255, 0.02); border-radius: 18px; overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.04); text-decoration: none; color: #fff;
-            display: flex; flex-direction: column;
-            cursor: pointer;
-        }
-        
-        .media-preview { width: 100%; height: 210px; background: #03040b; position: relative; overflow: hidden; }
-        .media-preview video, .media-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .media-preview::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 40%; background: linear-gradient(to top, rgba(0,0,0,0.6), transparent); pointer-events: none; }
-        
-        .card-info { padding: 12px; }
-        .card-title { font-size: 0.8rem; font-weight: 500; line-height: 1.4; color: rgba(255, 255, 255, 0.9); height: 2.8em; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-        
-        .loading { text-align: center; color: rgba(255, 255, 255, 0.3); font-size: 0.85rem; padding: 30px; width: 100%; grid-column: span 2; }
-
-        /* Ad Container */
-        .ad-container {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 18px;
-            padding: 12px 10px 10px;
-            max-width: 320px;
-            margin: 10px auto 20px auto;
-            text-align: center;
-        }
-        .ad-label {
-            font-size: 0.58rem;
-            color: rgba(255,255,255,0.3);
-            letter-spacing: 2px;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            font-weight: 600;
-        }
-        .ad-inner {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 250px;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="wrapper">
-        <div class="header-nav">
-            <a href="home.html" class="btn-back">⬅ KEMBALI</a>
-        </div>
-
-        <div class="profile-header">
-            <div class="profile-avatar-container" id="prof-avatar-box">
-                <span class="avatar-text" id="prof-avatar">-</span>
-            </div>
-            <div class="profile-name" id="prof-name">Memuat...</div>
-            <div class="profile-username" id="prof-username">@...</div>
-            
-            <div class="stats-box">
-                <div class="stat-item">
-                    <span class="stat-val" id="stat-preset">0</span>
-                    <span class="stat-lbl">Presets</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="ad-container">
-            <div class="ad-label">SPONSORED</div>
-            <div class="ad-inner" id="adsterra-space">
-                </div>
-        </div>
-
-        <h3>Karya Video</h3>
-        <div class="preset-grid" id="profile-grid">
-            <div class="loading">Memuat video kreator...</div>
-        </div>
-    </div>
-
-    <script>
-        const ADSTERRA_KEY = '9d8c7a557a4e4cd8023a8b293498cb2d'; 
-
-        const urlParams = new URLSearchParams(window.location.search);
-        let rawParam = urlParams.get('user') || ''; 
-        
-        // LOGIKA AMAN: Bersihkan parameter dari spasi, jadikan huruf kecil, hapus karakter @ atau kode %40 jika menyelinap
+        /* ============================================================
+           FIX: decode dulu, baru strip @, baru lowercase & trim
+           Ini toleran terhadap %40 (encoded @) maupun @ langsung
+           ============================================================ */
         let creatorTarget = decodeURIComponent(rawParam).trim().toLowerCase().replace('@', '');
 
-        const jsonUrl = 'https://raw.githubusercontent.com/suryahafiz100-cyber/MizuRaPreset/main/data.json';
-        const profilJsonUrl = 'https://raw.githubusercontent.com/suryahafiz100-cyber/MizuRaPreset/main/foto_profil.json';
+        const jsonUrl = 'https://raw.githubusercontent.com/suryahafiz100-cyber/MizuRaPreset/main/data.json'; 
+        const profilJsonUrl = 'https://raw.githubusercontent.com/suryahafiz100-cyber/MizuRaPreset/main/foto_profil.json'; 
 
-        if (creatorTarget) {
-            Promise.all([
-                fetch(jsonUrl).then(res => res.json()),
-                fetch(profilJsonUrl).then(res => res.json()).catch(() => ({}))
-            ])
-            .then(([data, fotoProfil]) => {
-                
-                // SISTEM FILTRASI MULTI-TOLERANSI (Mencari kecocokan mutlak tanpa peduli simbol @)
-                const kepinganPreset = data.filter(item => {
-                    let namaDiJson = (item.creator || '').trim().toLowerCase().replace('@', '');
-                    return namaDiJson === creatorTarget;
-                });
-                
-                if (kepinganPreset.length > 0) {
-                    const namaAsli = kepinganPreset[0].creator || 'Creator';
-                    const namaTanpaAt = namaAsli.replace('@', '');
-                    
-                    document.getElementById('prof-name').innerText = namaTanpaAt;
-                    document.getElementById('prof-username').innerText = '@' + namaTanpaAt.toLowerCase();
-                    document.getElementById('stat-preset').innerText = kepinganPreset.length;
+        if (creatorTarget) { 
+            Promise.all([ 
+                fetch(jsonUrl).then(res => res.json()), 
+                fetch(profilJsonUrl).then(res => res.json()).catch(() => ({})) 
+            ]) 
+            .then(([data, fotoProfil]) => { 
 
-                    // LOAD FOTO PROFIL KREATOR
-                    const avatarBox = document.getElementById('prof-avatar-box');
-                    if (fotoProfil[namaAsli] && fotoProfil[namaAsli].trim() !== '') {
-                        avatarBox.innerHTML = `<img src="${fotoProfil[namaAsli]}" alt="Profil">`;
-                    } else if (fotoProfil['@' + namaTanpaAt] && fotoProfil['@' + namaTanpaAt].trim() !== '') {
-                        avatarBox.innerHTML = `<img src="${fotoProfil['@' + namaTanpaAt]}" alt="Profil">`;
-                    } else {
-                        const inisial = namaTanpaAt.charAt(0).toUpperCase();
-                        avatarBox.innerHTML = `<span class="avatar-text">${inisial}</span>`;
-                    }
+                /* ============================================================
+                   FIX UTAMA FILTER: 
+                   - Strip @ dari data.json juga sebelum compare
+                   - Keduanya di-lowercase dan di-trim agar cocok pasti
+                   ============================================================ */
+                const kepinganPreset = data.filter(item => { 
+                    let namaDiJson = (item.creator || '').trim().toLowerCase().replace('@', ''); 
+                    return namaDiJson === creatorTarget; 
+                }); 
+                 
+                if (kepinganPreset.length > 0) { 
+                    const namaAsli = kepinganPreset[0].creator || 'Creator'; 
+                    const namaTanpaAt = namaAsli.replace('@', ''); 
+                     
+                    document.getElementById('prof-name').innerText = namaTanpaAt; 
+                    document.getElementById('prof-username').innerText = '@' + namaTanpaAt.toLowerCase(); 
+                    document.getElementById('stat-preset').innerText = kepinganPreset.length; 
 
-                    bikinGridKreator(kepinganPreset);
-                    muatIklanAdsterra();
-                } else {
-                    document.getElementById('prof-name').innerText = "Kreator Tidak Ditemukan";
-                    document.getElementById('profile-grid').innerHTML = '<div class="loading">Belum ada preset terdaftar untuk kreator ini.</div>';
-                }
-            })
-            .catch((err) => {
-                console.error(err);
-                document.getElementById('profile-grid').innerHTML = '<div class="loading">Gagal memuat profil</div>';
-            });
-        } else {
-            document.getElementById('prof-name').innerText = "Kreator Tidak Valid";
-            document.getElementById('profile-grid').innerHTML = '<div class="loading">Parameter nama user kosong.</div>';
-        }
+                    // LOAD FOTO PROFIL KREATOR 
+                    const avatarBox = document.getElementById('prof-avatar-box'); 
+                    if (fotoProfil[namaAsli] && fotoProfil[namaAsli].trim() !== '') { 
+                        avatarBox.innerHTML = `<img src="${fotoProfil[namaAsli]}" alt="Profil">`; 
+                    } else if (fotoProfil['@' + namaTanpaAt] && fotoProfil['@' + namaTanpaAt].trim() !== '') { 
+                        avatarBox.innerHTML = `<img src="${fotoProfil['@' + namaTanpaAt]}" alt="Profil">`; 
+                    } else { 
+                        const inisial = namaTanpaAt.charAt(0).toUpperCase(); 
+                        avatarBox.innerHTML = `<span class="avatar-text">${inisial}</span>`; 
+                    } 
 
-        function bikinGridKreator(presetList) {
-            const container = document.getElementById('profile-grid');
-            container.innerHTML = '';
+                    bikinGridKreator(kepinganPreset); 
+                    muatIklanAdsterra(); 
+                } else { 
+                    document.getElementById('prof-name').innerText = "Kreator Tidak Ditemukan"; 
+                    document.getElementById('profile-grid').innerHTML = '<div class="loading">Belum ada preset terdaftar untuk kreator ini.</div>'; 
+                } 
+            }) 
+            .catch((err) => { 
+                console.error(err); 
+                document.getElementById('profile-grid').innerHTML = '<div class="loading">Gagal memuat profil</div>'; 
+            }); 
+        } else { 
+            document.getElementById('prof-name').innerText = "Kreator Tidak Valid"; 
+            document.getElementById('profile-grid').innerHTML = '<div class="loading">Parameter nama user kosong.</div>'; 
+        } 
 
-            presetList.forEach(item => {
-                const videoExtensions = ['.mp4', '.mov', '.avi'];
-                const isVideo = videoExtensions.some(ext => item.link_video.toLowerCase().endsWith(ext));
-                
-                let mediaHtml = isVideo 
-                    ? `<video class="profile-preview-video" src="${item.link_video}" preload="metadata" loop muted playsinline></video>`
-                    : `<img src="${item.link_video}" loading="lazy">`;
+        function bikinGridKreator(presetList) { 
+            const container = document.getElementById('profile-grid'); 
+            container.innerHTML = ''; 
+            presetList.forEach(item => { 
+                const videoExtensions = ['.mp4', '.mov', '.avi']; 
+                const isVideo = videoExtensions.some(ext => item.link_video.toLowerCase().endsWith(ext)); 
+                let mediaHtml = isVideo  
+                    ? `<video class="profile-preview-video" src="${item.link_video}" preload="metadata" loop muted playsinline></video>` 
+                    : `<img src="${item.link_video}" loading="lazy">`; 
+                const cardHtml = `  
+                    <div class="preset-card" onclick="location.href='index.html?id=${encodeURIComponent(item.id)}'"> 
+                        <div class="media-preview">${mediaHtml}</div> 
+                        <div class="card-info"> 
+                            <div class="card-title">${item.judul}</div> 
+                        </div> 
+                    </div> 
+                `; 
+                container.insertAdjacentHTML('beforeend', cardHtml); 
+            }); 
+            aktifkanSistemVideo(); 
+        } 
 
-                const cardHtml = ` 
-                    <div class="preset-card" onclick="location.href='index.html?id=${encodeURIComponent(item.id)}'">
-                        <div class="media-preview">${mediaHtml}</div>
-                        <div class="card-info">
-                            <div class="card-title">${item.judul}</div>
-                        </div>
-                    </div>
-                `;
-                container.insertAdjacentHTML('beforeend', cardHtml);
-            });
-
-            aktifkanSistemVideo();
-        }
-
-        function aktifkanSistemVideo() {
-            const semuaVideo = document.querySelectorAll('.profile-preview-video');
-            const sensor = new IntersectionObserver((daftar) => {
-                daftar.forEach(v => { if (!v.isIntersecting) { v.target.pause(); v.target.currentTime = 0; } });
-            }, { threshold: 0.1 });
-
-            semuaVideo.forEach(video => {
-                sensor.observe(video);
-                const penampung = video.closest('.preset-card');
-                
-                penampung.addEventListener('mouseenter', () => video.play().catch(()=>{}));
-                penampung.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
-                penampung.addEventListener('touchstart', () => {
-                    semuaVideo.forEach(vid => { if(vid !== video) { vid.pause(); vid.currentTime = 0; } });
+        function aktifkanSistemVideo() { 
+            const semuaVideo = document.querySelectorAll('.profile-preview-video'); 
+            const sensor = new IntersectionObserver((daftar) => { 
+                daftar.forEach(v => { if (!v.isIntersecting) { v.target.pause(); v.target.currentTime = 0; } }); 
+            }, { threshold: 0.1 }); 
+            semuaVideo.forEach(video => { 
+                sensor.observe(video); 
+                const penampung = video.closest('.preset-card'); 
+                penampung.addEventListener('mouseenter', () => video.play().catch(()=>{})); 
+                penampung.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; }); 
+                penampung.addEventListener('touchstart', () => { 
+                    semuaVideo.forEach(vid => { if(vid !== video) { vid.pause(); vid.currentTime = 0; } }); 
                     video.play().catch(()=>{}); 
-                }, { passive: true });
-                penampung.addEventListener('touchend', () => { setTimeout(() => { video.pause(); video.currentTime = 0; }, 300); }, { passive: true });
-            });
-        }
+                }, { passive: true }); 
+                penampung.addEventListener('touchend', () => { 
+                    setTimeout(() => { video.pause(); video.currentTime = 0; }, 300); 
+                }, { passive: true }); 
+            }); 
+        } 
 
-        function muatIklanAdsterra() {
-            try {
-                const container = document.getElementById('adsterra-space');
-                
-                window.atOptions = {
-                    'key' : ADSTERRA_KEY,
-                    'format' : 'iframe',
-                    'height' : 250,
-                    'width' : 300,
-                    'params' : {}
-                };
-
-                const scriptAd = document.createElement('script');
-                scriptAd.type = 'text/javascript';
-                scriptAd.src = `https://www.highperformanceformat.com/${ADSTERRA_KEY}/invoke.js`;
-                
-                container.appendChild(scriptAd);
-            } catch (e) {
-                console.log("Adsterra Terblokir Browser / AdBlock", e);
-            }
-        }
-    </script>
-</body>
+        function muatIklanAdsterra() { 
+            try { 
+                const container = document.getElementById('adsterra-space'); 
+                window.atOptions = { 
+                    'key' : ADSTERRA_KEY, 
+                    'format' : 'iframe', 
+                    'height' : 250, 
+                    'width' : 300, 
+                    'params' : {} 
+                }; 
+                const scriptAd = document.createElement('script'); 
+                scriptAd.type = 'text/javascript'; 
+                scriptAd.src = `https://www.highperformanceformat.com/${ADSTERRA_KEY}/invoke.js`; 
+                container.appendChild(scriptAd); 
+            } catch (e) { 
+                console.log("Adsterra Terblokir Browser / AdBlock", e); 
+            } 
+        } 
+    </script> 
+</body> 
 </html>
