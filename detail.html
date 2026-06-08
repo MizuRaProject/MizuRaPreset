@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="k1e2nVLNkHoJwCu6ol3GgFBjzxbYY4f1Hl7UWkhitAg" />
-    <title>MizuRa Preset</title>
+    <title>MizuRa Preset - Detail</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
@@ -44,6 +44,7 @@
             display: block; 
         }
         
+        /* Navigasi Overlay Atas */
         .top-overlay {
             position: absolute;
             top: 0;
@@ -55,15 +56,39 @@
             align-items: center;
             background: linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0));
             z-index: 10;
+            gap: 10px;
         }
-        .creator-info { display: flex; align-items: center; gap: 10px; }
-        .avatar { width: 36px; height: 36px; background: #333; border-radius: 50%; border: 2px solid #00f2fe; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; color: #fff; }
-        .creator-text h2 { font-size: 0.9rem; font-weight: 600; color: #fff; }
-        .creator-text p { font-size: 0.75rem; color: #bbb; }
+
+        /* TOMBOL BALIK PREMIUM */
+        .btn-back-home {
+            text-decoration: none;
+            color: white;
+            background: rgba(255, 255, 255, 0.12);
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            z-index: 15;
+            transition: background 0.2s;
+        }
+        .btn-back-home:active {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .creator-info { display: flex; align-items: center; gap: 10px; flex-grow: 1; justify-content: flex-start; }
+        .avatar { width: 34px; height: 34px; background: #333; border-radius: 50%; border: 2px solid #00f2fe; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem; color: #fff; }
+        .creator-text h2 { font-size: 0.85rem; font-weight: 600; color: #fff; line-height: 1.2; }
+        .creator-text p { font-size: 0.7rem; color: #bbb; }
         
         .menu-btn { 
             width: 36px; height: 36px; 
-            background: rgba(255,255,0.15); 
+            background: rgba(255,255,255,0.1); 
             backdrop-filter: blur(5px); 
             border-radius: 50%; 
             display: flex; flex-direction: column;
@@ -185,77 +210,36 @@
             background: linear-gradient(90deg, #3d8abf 0%, #00bcd4 100%);
         }
 
-        /* === MODAL PILIHAN BARU === */
+        /* === MODAL PILIHAN === */
         .modal {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0, 0, 0, 0.75);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            padding: 20px;
+            display: none; align-items: center; justify-content: center;
+            z-index: 10000; padding: 20px;
         }
         .modal-content {
-            background: #0f1026;
-            border-radius: 18px;
-            padding: 24px 20px;
-            width: 100%;
-            max-width: 320px;
-            text-align: center;
+            background: #0f1026; border-radius: 18px; padding: 24px 20px;
+            width: 100%; max-width: 320px; text-align: center;
             border: 1px solid rgba(0, 242, 254, 0.15);
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .modal-content h3 {
-            font-size: 1.15rem;
-            font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 8px;
-        }
-        .modal-content .desc {
-            font-size: 0.82rem;
-            color: #aaa;
-            margin-bottom: 20px;
-            line-height: 1.4;
-        }
+        .modal-content h3 { font-size: 1.15rem; font-weight: 700; color: #ffffff; margin-bottom: 8px; }
+        .modal-content .desc { font-size: 0.82rem; color: #aaa; margin-bottom: 20px; line-height: 1.4; }
+        
         .pilihan-btn {
-            display: block;
-            width: 100%;
-            padding: 15px 14px;
-            margin: 8px 0;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
+            display: block; width: 100%; padding: 15px 14px; margin: 8px 0;
+            border: none; border-radius: 12px; font-weight: 600; font-size: 0.95rem;
+            cursor: pointer; transition: all 0.2s ease;
         }
         .pilihan-btn.versi-5mb {
-            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
-            color: #ffffff;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); color: #ffffff;
             box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
         }
-        .pilihan-btn.versi-5mb:active {
-            transform: translateY(1px);
-        }
-        .pilihan-btn.versi-xml {
-            background: #1a1b3a;
-            color: #00f2fe;
-            border: 1px solid #00f2fe;
-        }
-        .pilihan-btn.versi-xml:active {
-            background: rgba(0, 242, 254, 0.1);
-        }
-        .pilihan-btn.batal {
-            background: transparent;
-            color: #777;
-            border: 1px solid #444;
-            margin-top: 12px;
-            font-weight: 500;
-        }
+        .pilihan-btn.versi-5mb:active { transform: translateY(1px); }
+        .pilihan-btn.versi-xml { background: #1a1b3a; color: #00f2fe; border: 1px solid #00f2fe; }
+        .pilihan-btn.versi-xml:active { background: rgba(0, 242, 254, 0.1); }
+        .pilihan-btn.batal { background: transparent; color: #777; border: 1px solid #444; margin-top: 12px; font-weight: 500; }
     </style>
 </head>
 <body onclick="unmuteVideo()">
@@ -272,8 +256,12 @@
                 <div><span>Lapor bug / error website</span></div>
             </a>
         </div>
+        
         <div class="media-box" id="media-container">
             <div class="top-overlay">
+                <a href="/" class="btn-back-home">
+                    <span>⬅</span> BALIK
+                </a>
                 <div class="creator-info">
                     <div class="avatar" id="avatar-initial">S</div>
                     <div class="creator-text">
@@ -288,6 +276,7 @@
             <div class="sound-notice" id="sound-tag">Muted - Ketuk Layar</div>
             <div class="loading-text" id="loading-txt">Membaca Data...</div>
         </div>
+        
         <div class="content-info">
             <h1 id="judul-preset">Memuat Judul...</h1>
             <p class="caption" id="caption-preset">Silahkan tunggu...</p>
@@ -309,7 +298,6 @@
             <a href="#" id="btn-am" class="btn-download" onclick="tambahKlik(event)">AMBIL PRESET DI SINI</a>
         </div>
 
-        <!-- MODAL PILIHAN 5MB vs XML -->
         <div id="pilihan-modal" class="modal">
             <div class="modal-content">
                 <h3>Pilih Versi Preset</h3>
@@ -395,7 +383,6 @@
             }
         }
 
-        // Fungsi baru untuk menjalankan download + counter
         function jalankanDownload(url) {
             if (isCounting || !url || url === '#') return;
             isCounting = true;
@@ -415,16 +402,13 @@
             });
         }
 
-        // Fungsi utama tombol (sekarang hanya buka modal kalau ada XML)
         function tambahKlik(event) {
             event.preventDefault();
             if (isCounting) return;
 
             if (linkXml && linkXml.trim() !== '') {
-                // Ada dua pilihan → tampilkan modal
                 document.getElementById('pilihan-modal').style.display = 'flex';
             } else {
-                // Hanya 5MB → langsung download
                 jalankanDownload(linkAm);
             }
         }
