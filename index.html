@@ -63,7 +63,7 @@
         
         .menu-btn { 
             width: 36px; height: 36px; 
-            background: rgba(255,255,255,0.15); 
+            background: rgba(255,255,0.15); 
             backdrop-filter: blur(5px); 
             border-radius: 50%; 
             display: flex; flex-direction: column;
@@ -184,6 +184,78 @@
             opacity: 0.7; cursor: not-allowed;
             background: linear-gradient(90deg, #3d8abf 0%, #00bcd4 100%);
         }
+
+        /* === MODAL PILIHAN BARU === */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 20px;
+        }
+        .modal-content {
+            background: #0f1026;
+            border-radius: 18px;
+            padding: 24px 20px;
+            width: 100%;
+            max-width: 320px;
+            text-align: center;
+            border: 1px solid rgba(0, 242, 254, 0.15);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .modal-content h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+        .modal-content .desc {
+            font-size: 0.82rem;
+            color: #aaa;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+        .pilihan-btn {
+            display: block;
+            width: 100%;
+            padding: 15px 14px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .pilihan-btn.versi-5mb {
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
+        }
+        .pilihan-btn.versi-5mb:active {
+            transform: translateY(1px);
+        }
+        .pilihan-btn.versi-xml {
+            background: #1a1b3a;
+            color: #00f2fe;
+            border: 1px solid #00f2fe;
+        }
+        .pilihan-btn.versi-xml:active {
+            background: rgba(0, 242, 254, 0.1);
+        }
+        .pilihan-btn.batal {
+            background: transparent;
+            color: #777;
+            border: 1px solid #444;
+            margin-top: 12px;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body onclick="unmuteVideo()">
@@ -236,7 +308,21 @@
             </div>
             <a href="#" id="btn-am" class="btn-download" onclick="tambahKlik(event)">AMBIL PRESET DI SINI</a>
         </div>
+
+        <!-- MODAL PILIHAN 5MB vs XML -->
+        <div id="pilihan-modal" class="modal">
+            <div class="modal-content">
+                <h3>Pilih Versi Preset</h3>
+                <p class="desc">5MB = Full version (asset + efek lengkap)<br>XML = Ringan (hanya file project)</p>
+                
+                <button class="pilihan-btn versi-5mb" onclick="pilihDanDownload('5mb')">AMBIL VERSI 5MB</button>
+                <button class="pilihan-btn versi-xml" onclick="pilihDanDownload('xml')">AMBIL VERSI XML</button>
+                
+                <button class="pilihan-btn batal" onclick="tutupModal()">Batal</button>
+            </div>
+        </div>
     </div>
+
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const presetId = urlParams.get('id') || 'preset1';
@@ -246,16 +332,21 @@
         const GET_URL = `https://countapi.mileshilliard.com/api/v1/get/${COUNTER_KEY}`;
         let videoEl = null;
         let linkAm = '#';
+        let linkXml = '';
         let isCounting = false;
+
         function toggleMenu(show) {
             const sidebar = document.getElementById('sidebar-menu');
             const bg = document.getElementById('menu-bg');
             if (show) { sidebar.classList.add('active'); bg.classList.add('active'); }
             else { sidebar.classList.remove('active'); bg.classList.remove('active'); }
         }
+
         function formatAngka(n) { return Number(n).toLocaleString('id-ID'); }
         function tampilkanJumlah(value) { const el = document.getElementById('count-number'); if (el) el.textContent = formatAngka(value); }
+
         fetch(GET_URL).then(res => res.json()).then(data => { tampilkanJumlah(data.value ?? 0); }).catch(() => { tampilkanJumlah(0); });
+
         if (presetId) {
             fetch(jsonUrl).then(res => res.json()).then(data => {
                 const preset = data.find(item => item.id === presetId);
@@ -268,6 +359,7 @@
                     document.getElementById('avatar-initial').innerText = creatorName.replace('@', '').charAt(0).toUpperCase();
                     if (preset.caption) document.getElementById('caption-preset').innerText = preset.caption;
                     if (preset.tags) document.getElementById('tags-preset').innerText = preset.tags;
+
                     const container = document.getElementById('media-container');
                     const videoExtensions = ['.mp4', '.mov', '.avi'];
                     const isVideo = videoExtensions.some(ext => preset.link_video.toLowerCase().endsWith(ext));
@@ -280,13 +372,21 @@
                         document.getElementById('loading-txt').style.display = 'none';
                         document.getElementById('sound-tag').style.display = 'none';
                     }
+
                     const btn = document.getElementById('btn-am');
-                    linkAm = preset.link_am;
-                    btn.href = preset.link_am;
+                    linkAm = preset.link_am || '#';
+                    linkXml = preset.link_xml || '';
+                    btn.href = '#';
                     btn.style.display = 'block';
-                } else { document.getElementById('loading-txt').innerText = "Preset Tidak Ditemukan!"; }
-            }).catch(err => { console.error(err); document.getElementById('loading-txt').innerText = "Gagal Memuat Data!"; });
+                } else { 
+                    document.getElementById('loading-txt').innerText = "Preset Tidak Ditemukan!"; 
+                }
+            }).catch(err => { 
+                console.error(err); 
+                document.getElementById('loading-txt').innerText = "Gagal Memuat Data!"; 
+            });
         }
+
         function unmuteVideo() {
             if (videoEl) {
                 videoEl.muted = false;
@@ -294,17 +394,52 @@
                 setTimeout(() => { document.getElementById('sound-tag').style.display = 'none'; }, 1200);
             }
         }
-        function tambahKlik(event) {
-            event.preventDefault();
-            if (isCounting) return;
+
+        // Fungsi baru untuk menjalankan download + counter
+        function jalankanDownload(url) {
+            if (isCounting || !url || url === '#') return;
             isCounting = true;
             const btn = document.getElementById('btn-am');
             btn.innerText = "MEMPROSES...";
             btn.classList.add('loading');
-            fetch(HIT_URL).then(res => res.json()).then(data => { tampilkanJumlah(data.value ?? 0); }).catch(() => {}).finally(() => {
-                window.location.href = linkAm;
-                setTimeout(() => { btn.innerText = "AMBIL PRESET DI SINI"; btn.classList.remove('loading'); isCounting = false; }, 2000);
+
+            fetch(HIT_URL).then(res => res.json()).then(data => { 
+                tampilkanJumlah(data.value ?? 0); 
+            }).catch(() => {}).finally(() => {
+                window.location.href = url;
+                setTimeout(() => { 
+                    btn.innerText = "AMBIL PRESET DI SINI"; 
+                    btn.classList.remove('loading'); 
+                    isCounting = false; 
+                }, 2000);
             });
+        }
+
+        // Fungsi utama tombol (sekarang hanya buka modal kalau ada XML)
+        function tambahKlik(event) {
+            event.preventDefault();
+            if (isCounting) return;
+
+            if (linkXml && linkXml.trim() !== '') {
+                // Ada dua pilihan → tampilkan modal
+                document.getElementById('pilihan-modal').style.display = 'flex';
+            } else {
+                // Hanya 5MB → langsung download
+                jalankanDownload(linkAm);
+            }
+        }
+
+        function tutupModal() {
+            document.getElementById('pilihan-modal').style.display = 'none';
+        }
+
+        function pilihDanDownload(jenis) {
+            tutupModal();
+            if (jenis === '5mb') {
+                jalankanDownload(linkAm);
+            } else if (jenis === 'xml' && linkXml) {
+                jalankanDownload(linkXml);
+            }
         }
     </script>
 </body>
