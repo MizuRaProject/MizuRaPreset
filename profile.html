@@ -37,16 +37,19 @@
 
         /* Header Profil */
         .profile-header { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 30px; }
-        .profile-avatar { 
+        .profile-avatar-container {
             width: 80px; height: 80px; background: #13152e; border-radius: 50%; 
             display: flex; align-items: center; justify-content: center; 
-            font-weight: 700; font-size: 2rem; border: 3px solid #00f2fe;
+            border: 3px solid #00f2fe; overflow: hidden;
             box-shadow: 0 0 20px rgba(0, 242, 254, 0.2); margin-bottom: 12px;
         }
+        .profile-avatar-container img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-avatar-container .avatar-text { font-weight: 700; font-size: 2rem; color: #fff; }
+        
         .profile-name { font-size: 1.3rem; font-weight: 700; color: #fff; }
         .profile-username { font-size: 0.85rem; color: #00f2fe; margin-bottom: 15px; font-weight: 500; }
         
-        /* Statistik Kreator — sekarang border-radius 18px biar match sama ad */
+        /* Statistik Kreator */
         .stats-box { 
             display: flex; gap: 20px; background: rgba(255,255,255,0.02); 
             padding: 12px 30px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.05);
@@ -74,13 +77,13 @@
         
         .loading { text-align: center; color: rgba(255, 255, 255, 0.3); font-size: 0.85rem; padding: 30px; width: 100%; grid-column: span 2; }
 
-        /* Ad Container — sudah 18px, sekarang stats box ikut sama */
+        /* Ad Container */
         .ad-container {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: 18px;
             padding: 12px 10px 10px;
-            max-width: 300px;
+            max-width: 320px;
             margin: 10px auto 20px auto;
             text-align: center;
         }
@@ -108,7 +111,9 @@
         </div>
 
         <div class="profile-header">
-            <div class="profile-avatar" id="prof-avatar">-</div>
+            <div class="profile-avatar-container" id="prof-avatar-box">
+                <span class="avatar-text" id="prof-avatar">-</span>
+            </div>
             <div class="profile-name" id="prof-name">Memuat...</div>
             <div class="profile-username" id="prof-username">@...</div>
             
@@ -120,21 +125,10 @@
             </div>
         </div>
 
-        <!-- IKLAN -->
         <div class="ad-container">
             <div class="ad-label">SPONSORED</div>
-            <div class="ad-inner">
-                <script>
-                  atOptions = {
-                    'key' : '9d8c7a557a4e4cd8023a8b293498cb2d',
-                    'format' : 'iframe',
-                    'height' : 250,
-                    'width' : 300,
-                    'params' : {}
-                  };
-                </script>
-                <script src="https://www.highperformanceformat.com/9d8c7a557a4e4cd8023a8b293498cb2d/invoke.js"></script>
-            </div>
+            <div class="ad-inner" id="adsterra-space">
+                </div>
         </div>
 
         <h3>Karya Video</h3>
@@ -144,31 +138,49 @@
     </div>
 
     <script>
+        // ISI KODE BERDASARKAN AKUN ADSTERRA LU, TUAN
+        const ADSTERRA_KEY = '9d8c7a557a4e4cd8023a8b293498cb2d'; 
+
         const urlParams = new URLSearchParams(window.location.search);
         const creatorTarget = urlParams.get('user'); 
-        const jsonUrl = 'data.json';
+        const jsonUrl = 'https://raw.githubusercontent.com/suryahafiz100-cyber/MizuRaPreset/main/data.json';
+        const profilJsonUrl = 'https://raw.githubusercontent.com/suryahafiz100-cyber/MizuRaPreset/main/foto_profil.json';
 
         if (creatorTarget) {
-            fetch(jsonUrl)
-                .then(res => res.json())
-                .then(data => {
-                    const kepinganPreset = data.filter(item => (item.creator || '').toLowerCase() === creatorTarget.toLowerCase());
-                    
-                    if (kepinganPreset.length > 0) {
-                        const namaAsli = kepinganPreset[0].creator;
-                        document.getElementById('prof-name').innerText = namaAsli.replace('@', '');
-                        document.getElementById('prof-username').innerText = namaAsli.toLowerCase();
-                        document.getElementById('prof-avatar').innerText = namaAsli.replace('@', '').charAt(0).toUpperCase();
-                        document.getElementById('stat-preset').innerText = kepinganPreset.length;
+            Promise.all([
+                fetch(jsonUrl).then(res => res.json()),
+                fetch(profilJsonUrl).then(res => res.json()).catch(() => ({}))
+            ])
+            .then(([data, fotoProfil]) => {
+                const kepinganPreset = data.filter(item => (item.creator || '').toLowerCase() === creatorTarget.toLowerCase());
+                
+                if (kepinganPreset.length > 0) {
+                    const namaAsli = kepinganPreset[0].creator;
+                    document.getElementById('prof-name').innerText = namaAsli.replace('@', '');
+                    document.getElementById('prof-username').innerText = namaAsli.toLowerCase();
+                    document.getElementById('stat-preset').innerText = kepinganPreset.length;
 
-                        bikinGridKreator(kepinganPreset);
+                    // LOAD FOTO PROFIL KREATOR
+                    const avatarBox = document.getElementById('prof-avatar-box');
+                    if (fotoProfil[namaAsli] && fotoProfil[namaAsli].trim() !== '') {
+                        avatarBox.innerHTML = `<img src="${fotoProfil[namaAsli]}" alt="Profil">`;
                     } else {
-                        document.getElementById('prof-name').innerText = "Kreator Tidak Ditemukan";
+                        const inisial = namaAsli.replace('@', '').charAt(0).toUpperCase();
+                        avatarBox.innerHTML = `<span class="avatar-text">${inisial}</span>`;
                     }
-                })
-                .catch(() => {
-                    document.getElementById('profile-grid').innerHTML = '<div class="loading">Gagal memuat profil</div>';
-                });
+
+                    bikinGridKreator(kepinganPreset);
+                    // PANGGIL IKLAN SETELAH DATA SELESAI DI-LOAD AGAR TIDAK BENTROK
+                    muatIklanAdsterra();
+                } else {
+                    document.getElementById('prof-name').innerText = "Kreator Tidak Ditemukan";
+                    document.getElementById('profile-grid').innerHTML = '<div class="loading">Belum ada preset terdaftar.</div>';
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+                document.getElementById('profile-grid').innerHTML = '<div class="loading">Gagal memuat profil</div>';
+            });
         }
 
         function bikinGridKreator(presetList) {
@@ -215,6 +227,31 @@
                 }, { passive: true });
                 penampung.addEventListener('touchend', () => { setTimeout(() => { video.pause(); video.currentTime = 0; }, 300); }, { passive: true });
             });
+        }
+
+        // SISTEM INJECT AUTOMATION ADSTERRA
+        function muatIklanAdsterra() {
+            try {
+                const container = document.getElementById('adsterra-space');
+                
+                // Set parameter opsi
+                window.atOptions = {
+                    'key' : ADSTERRA_KEY,
+                    'format' : 'iframe',
+                    'height' : 250,
+                    'width' : 300,
+                    'params' : {}
+                };
+
+                // Membuat tag script eksternal pemanggil secara mandiri
+                const scriptAd = document.createElement('script');
+                scriptAd.type = 'text/javascript';
+                scriptAd.src = `https://www.highperformanceformat.com/${ADSTERRA_KEY}/invoke.js`;
+                
+                container.appendChild(scriptAd);
+            } catch (e) {
+                console.log("Adsterra Terblokir Browser / AdBlock", e);
+            }
         }
     </script>
 </body>
