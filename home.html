@@ -300,7 +300,6 @@
                 const rankClass = index === 0 ? 'rank-1' : (index === 1 ? 'rank-2' : '');
                 const trofi = index === 0 ? '👑' : `#${index + 1}`;
 
-                // SEKARANG BISA DIKLIK: Mengarah ke halaman profile.html membawa parameter nama kreator
                 const html = `
                     <div class="leaderboard-item ${rankClass}" onclick="bukaProfil('${creator.nama}')">
                         <div class="rank-info">
@@ -341,7 +340,6 @@
                     mediaHtml = `<img src="${item.link_video}" loading="lazy">`;
                 }
 
-                // DITAMBAHKAN: onclick="bukaProfil" pada teks nama kreator dengan stopPropagation agar tidak bentrok dengan klik detail video
                 const cardHtml = `
                     <div class="preset-card" onclick="bukaPreset(event, '${item.id}')">
                         <div class="media-preview">
@@ -362,17 +360,15 @@
             inisialisasiKontrolVideo();
         }
 
-        // Fungsi navigasi ke detail preset
+        // Fungsi navigasi ke detail preset lewat index.html secara aman
         function bukaPreset(event, id) {
-            window.location.href = `index.html?id=${id}`;
+            window.location.href = `index.html?id=${encodeURIComponent(id)}`;
         }
 
-        // FUNGSI BARU: Akses profil secara dinamis
         function bukaProfil(namaKreator) {
             window.location.href = `profile.html?user=${encodeURIComponent(namaKreator)}`;
         }
 
-        // SISTEM DETEKSI SCROLL & GESTURE VIDEO
         function inisialisasiKontrolVideo() {
             const semuaVideo = document.querySelectorAll('.mizura-preview-video');
 
