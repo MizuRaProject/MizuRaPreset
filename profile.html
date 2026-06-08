@@ -1,4 +1,4 @@
-        <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -142,12 +142,11 @@
         const ADSTERRA_KEY = '9d8c7a557a4e4cd8023a8b293498cb2d'; 
 
         const urlParams = new URLSearchParams(window.location.search);
-        let creatorTarget = urlParams.get('user') || ''; 
+        let rawParam = urlParams.get('user') || ''; 
         
-        // Bersihkan data parameter jika ada whitespace atau double symbol
-        creatorTarget = creatorTarget.trim().toLowerCase();
+        // LOGIKA AMAN: Bersihkan parameter dari spasi, jadikan huruf kecil, hapus karakter @ atau kode %40 jika menyelinap
+        let creatorTarget = decodeURIComponent(rawParam).trim().toLowerCase().replace('@', '');
 
-        // Menggunakan URL Raw GitHub yang sama persis seperti di home.html & index.html Anda
         const jsonUrl = 'https://raw.githubusercontent.com/suryahafiz100-cyber/MizuRaPreset/main/data.json';
         const profilJsonUrl = 'https://raw.githubusercontent.com/suryahafiz100-cyber/MizuRaPreset/main/foto_profil.json';
 
@@ -157,25 +156,29 @@
                 fetch(profilJsonUrl).then(res => res.json()).catch(() => ({}))
             ])
             .then(([data, fotoProfil]) => {
-                // SINKRONISASI COCOK NAMA: mengabaikan simbol @ dan sensitivitas huruf besar/kecil
+                
+                // SISTEM FILTRASI MULTI-TOLERANSI (Mencari kecocokan mutlak tanpa peduli simbol @)
                 const kepinganPreset = data.filter(item => {
-                    const namaItem = (item.creator || '').trim().toLowerCase();
-                    return namaItem === creatorTarget || 
-                           namaItem.replace('@', '') === creatorTarget.replace('@', '');
+                    let namaDiJson = (item.creator || '').trim().toLowerCase().replace('@', '');
+                    return namaDiJson === creatorTarget;
                 });
                 
                 if (kepinganPreset.length > 0) {
-                    const namaAsli = kepinganPreset[0].creator || '@Creator';
-                    document.getElementById('prof-name').innerText = namaAsli.replace('@', '');
-                    document.getElementById('prof-username').innerText = namaAsli.toLowerCase();
+                    const namaAsli = kepinganPreset[0].creator || 'Creator';
+                    const namaTanpaAt = namaAsli.replace('@', '');
+                    
+                    document.getElementById('prof-name').innerText = namaTanpaAt;
+                    document.getElementById('prof-username').innerText = '@' + namaTanpaAt.toLowerCase();
                     document.getElementById('stat-preset').innerText = kepinganPreset.length;
 
                     // LOAD FOTO PROFIL KREATOR
                     const avatarBox = document.getElementById('prof-avatar-box');
                     if (fotoProfil[namaAsli] && fotoProfil[namaAsli].trim() !== '') {
                         avatarBox.innerHTML = `<img src="${fotoProfil[namaAsli]}" alt="Profil">`;
+                    } else if (fotoProfil['@' + namaTanpaAt] && fotoProfil['@' + namaTanpaAt].trim() !== '') {
+                        avatarBox.innerHTML = `<img src="${fotoProfil['@' + namaTanpaAt]}" alt="Profil">`;
                     } else {
-                        const inisial = namaAsli.replace('@', '').charAt(0).toUpperCase();
+                        const inisial = namaTanpaAt.charAt(0).toUpperCase();
                         avatarBox.innerHTML = `<span class="avatar-text">${inisial}</span>`;
                     }
 
@@ -192,7 +195,7 @@
             });
         } else {
             document.getElementById('prof-name').innerText = "Kreator Tidak Valid";
-            document.getElementById('profile-grid').innerHTML = '<div class="loading">Parameter user kosong.</div>';
+            document.getElementById('profile-grid').innerHTML = '<div class="loading">Parameter nama user kosong.</div>';
         }
 
         function bikinGridKreator(presetList) {
